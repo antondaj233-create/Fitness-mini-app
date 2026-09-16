@@ -3,294 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fitness Hub Premium</title>
+    <title>Bytwise Premium</title>
     <script src="https://telegram.org"></script>
+    <!-- Подключаем иконки для таббара и карточек -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         :root {
-            --bg-color: #0d0e12;
-            --surface-color: #161920;
-            --surface-accent: #222733;
-            --text-main: #ffffff;
-            --text-muted: #7e8494;
-            --primary-glow: #00ff87;
-            --primary-blue: #007aff;
-            --accent-gradient: linear-gradient(135deg, #007aff 0%, #00ff87 100%);
-            --card-gradient: linear-gradient(180deg, #1c212e 0%, #161920 100%);
+            --bg-color: #f6f7fb;
+            --surface-color: #ffffff;
+            --text-main: #131313;
+            --text-muted: #8e8e93;
+            --primary-purple: #7f3dff;
+            --accent-orange: #ff9500;
+            --shadow-light: 0 8px 24px rgba(127, 61, 255, 0.06);
+            --border-radius: 20px;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
+            padding: 0 0 90px 0; /* Отступ снизу под таббар */
+            box-sizing: border-box;
+            -webkit-user-select: none;
         }
 
-        /* Шапка приложения */
+        /* Шапка */
         .header {
-            padding: 24px 20px 10px 20px;
+            padding: 20px 20px 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .user-info h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+        }
+        .user-info h1 span {
+            background: #7f3dff;
+            color: white;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+        .user-info p {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Главный контейнер виджета калорий */
+        .calories-widget {
+            background: var(--surface-color);
+            margin: 10px 20px;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        /* Круговой прогресс */
+        .progress-ring-container {
+            position: relative;
+            width: 110px;
+            height: 110px;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
         }
-        .header h2 {
-            margin: 0;
-            font-size: 24px;
+        .progress-text .percentage {
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: -0.5px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            display: block;
         }
-        .header p {
-            margin: 6px 0 0 0;
+        .progress-text .label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Инфо калорий справа */
+        .calories-info-block {
+            flex: 1;
+        }
+        .info-title {
             font-size: 13px;
             color: var(--text-muted);
-        }
-
-        /* Навигация (Вкладки) */
-        .tabs {
-            display: flex;
-            background-color: var(--surface-color);
-            padding: 4px;
-            margin: 10px 20px 20px 20px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: none;
-            color: var(--text-muted);
-            font-size: 14px;
+            margin-bottom: 4px;
             font-weight: 600;
-            border-radius: 11px;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .tab-btn.active {
-            background-color: var(--surface-accent);
-            color: var(--text-main);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        /* Контент вкладок */
-        .tab-content {
-            display: none;
-            padding: 0 20px 30px 20px;
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-        .tab-content.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Контейнер форм */
-        .form-container {
-            width: 100%;
-            max-width: 340px;
-            background: var(--card-gradient);
-            padding: 20px;
-            border-radius: 20px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        .form-group {
-            width: 100%;
-            margin-bottom: 18px;
-        }
-        .form-group:last-child {
-            margin-bottom: 5px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 12px;
+        .info-value {
+            font-size: 18px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        .info-value span {
+            color: var(--primary-purple);
+        }
+        .macros-grid {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .macro-item span {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .macro-b { color: #2ecc71; }
+        .macro-zh { color: #f1c40f; }
+        .macro-u { color: #3498db; }
+
+        /* Раздел "Сегодня" */
+        .section-title {
+            margin: 20px 20px 12px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .date-badge {
+            font-size: 13px;
+            background: #ffffff;
+            padding: 6px 12px;
+            border-radius: 12px;
+            color: #555;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        /* Сетка приемов пищи */
+        .meals-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 0 20px;
+        }
+        .meal-card {
+            background: var(--surface-color);
+            padding: 12px 8px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+        }
+        .meal-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .meal-name {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .meal-cal {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Баннер Нутрициолога */
+        .banner-ai {
+            background: linear-gradient(135deg, #f3ecff 0%, #f9f6ff 100%);
+            margin: 20px 20px;
+            padding: 16px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(127, 61, 255, 0.12);
+        }
+        .banner-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .banner-icon {
+            background: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-purple);
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(127, 61, 255, 0.1);
+        }
+        .banner-text h3 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .banner-text p {
+            margin: 2px 0 0 0;
+            font-size: 12px;
             color: var(--text-muted);
         }
-        input, select {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            background-color: var(--surface-color);
-            color: var(--text-main);
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-        }
 
-        /* Кнопки действия */
-        .action-btn {
-            width: 100%;
-            max-width: 340px;
+        /* Блок серии дней */
+        .streak-card {
+            background: var(--surface-color);
+            margin: 0 20px 20px 20px;
             padding: 16px;
-            background: var(--accent-gradient);
-            color: #000000;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.2);
-            transition: all 0.2s ease;
-        }
-        .action-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(0, 255, 135, 0.1);
-        }
-
-        /* Карточки тренировок */
-        .workout-list {
-            width: 100%;
-            max-width: 340px;
-        }
-        .workout-card {
-            background: var(--card-gradient);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 14px;
-            box-sizing: border-box;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
             display: flex;
             align-items: center;
             gap: 16px;
         }
-        .workout-icon {
-            font-size: 24px;
-            background: var(--surface-accent);
-            padding: 12px;
-            border-radius: 12px;
-            min-width: 24px;
-            text-align: center;
+        .streak-fire {
+            font-size: 32px;
+            background: #f1ecf6;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .workout-info {
-            flex: 1;
-        }
-        .workout-card h3 {
-            margin: 0 0 4px 0;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .workout-card p {
+        .streak-info h4 {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+        .streak-info .days {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-purple);
+            margin: 2px 0;
+        }
+        .streak-info p {
+            margin: 0;
+            font-size: 12px;
             color: var(--text-muted);
         }
-    </style>
-</head>
-<body>
 
-    <div class="header">
-        <h2>FITNESS HUB</h2>
-        <p>Твой персональный трекер активности</p>
-    </div>
+        /* Пустая история */
+        .empty-history {
+            background: var(--surface-color);
+            margin: 0 20px;
+            padding: 30px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            text-align: center;
+        }
+        .empty-icon {
+            font-size: 36px;
+            color: #d1d1d6;
+            margin-bottom: 12px;
+        }
+        .empty-history h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+        }
+        .empty-history p {
+            margin: 0 0 20px 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .btn-add-text {
+            background: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(127, 61, 255, 0.25);
+        }
 
-    <!-- Табы -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('calories')">🥗 Калории</button>
-        <button class="tab-btn" onclick="switchTab('workout')">🏋️‍♂️ Тренировки</button>
-    </div>
-
-    <!-- ТАБ 1: КАЛЬКУЛЯТОР -->
-    <div id="calories-tab" class="tab-content active">
-        <div class="form-container">
-            <div class="form-group">
-                <label>Ваш пол</label>
-                <select id="gender">
-                    <option value="male">👨 Мужчина</option>
-                    <option value="female">👩 Женщина</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Текущий вес (кг)</label>
-                <input type="number" id="weight" placeholder="Например: 72" inputmode="numeric">
-            </div>
-            <div class="form-group">
-                <label>Рост (см)</label>
-                <input type="number" id="height" placeholder="Например: 178" inputmode="numeric">
-            </div>
-            <div class="form-group">
-                <label>Полный возраст</label>
-                <input type="number" id="age" placeholder="Например: 24" inputmode="numeric">
-            </div>
-        </div>
-        <button class="action-btn" id="calcBtn">Рассчитать баланс БЖУ</button>
-    </div>
-
-    <!-- ТАБ 2: ТРЕНИРОВКИ -->
-    <div id="workout-tab" class="tab-content">
-        <div class="workout-list">
-            <div class="workout-card">
-                <div class="workout-icon">🍗</div>
-                <div class="workout-info">
-                    <h3>Приседания</h3>
-                    <p>3 подхода по 15 повторений • Отдых 60с</p>
-                </div>
-            </div>
-            <div class="workout-card">
-                <div class="workout-icon">💪</div>
-                <div class="workout-info">
-                    <h3>Отжимания от пола</h3>
-                    <p>3 подхода по 12 повторений • Спина ровно</p>
-                </div>
-            </div>
-            <div class="workout-card">
-                <div class="workout-icon">⏱</div>
-                <div class="workout-info">
-                    <h3>Планка на локтях</h3>
-                    <p>3 подхода по 45 секунд • Пресс зажат</p>
-                </div>
-            </div>
-        </div>
-        <button class="action-btn" id="finishWorkoutBtn" style="background: linear-gradient(135deg, #007aff 0%, #00c6ff 100%); box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);">⚡ Завершить сессию</button>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        /* Нижний таббар навигации */
+        .tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background: var(--surface-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #f0f0f2;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .tabbar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            width: 60px;
+        }
+        .tabbar-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .tabbar-item.active {
+            color: var(--primary-purple);
+        }
         
-        // Устанавливаем цвета хедера под цвет нашего фона
-        if (tg.setHeaderColor) {
-            tg.setHeaderColor('#0d0e12');
+        /* Центральная кнопка камеры */
+        .tabbar-item.center-btn {
+            position: relative;
+            top: -15px;
+            width: 56px;
+            height: 56px;
+            background: var(--primary-purple);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(127, 61, 255, 0.35);
+        }
+        .tabbar-item.center-btn i {
+            font-size: 22px;
+            margin: 0;
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            if (tabName === 'calories') {
-                document.querySelector('[onclick="switchTab(\'calories\')"]').classList.add('active');
-                document.getElementById('calories-tab').classList.add('active');
-            } else {
-                document.querySelector('[onclick="switchTab(\'workout\')"]').classList.add('active');
-                document.getElementById('workout-tab').classList.add('active');
-            }
+        /* Страницы (переключение) */
+        .page {
+            display: none;
+            animation: pageIn 0.25s ease-out;
         }
-
-        document.getElementById('calcBtn').addEventListener('click', () => {
-            const gender = document.getElementById('gender').value;
-            const weight = document.getElementById('weight').value;
-            const height = document.getElementById('height').value;
-            const age = document.getElementById('age').value;
-
-            if (!weight || !height || !age) {
