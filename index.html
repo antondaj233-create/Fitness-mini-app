@@ -3,111 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фитнес Калькулятор</title>
-    <!-- Подключаем официальный скрипт Telegram WebApp -->
+    <title>Fitness Hub Mini App</title>
     <script src="https://telegram.org"></script>
     <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #000000);
+            --hint-color: var(--tg-theme-hint-color, #999999);
+            --button-color: var(--tg-theme-button-color, #2481cc);
+            --button-text: var(--tg-theme-button-text-color, #ffffff);
+            --secondary-bg: var(--tg-theme-secondary-bg-color, #efeff4);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Навигация (Вкладки) */
+        .tabs {
+            display: flex;
+            background-color: var(--secondary-bg);
+            padding: 4px;
+            margin: 15px;
+            border-radius: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background-color: var(--bg-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Контент вкладок */
+        .tab-content {
+            display: none;
+            padding: 0 20px 20px 20px;
             flex-direction: column;
             align-items: center;
         }
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Формы */
         .form-group {
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             margin-bottom: 15px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 6px;
             font-size: 14px;
+            color: var(--hint-color);
         }
         input, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--tg-theme-hint-color, #ccc);
-            border-radius: 8px;
-            background-color: var(--tg-theme-secondary-bg-color, #fafafa);
-            color: var(--tg-theme-text-color, #000000);
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            max-width: 300px;
             padding: 12px;
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            border: 1px solid var(--secondary-bg);
+            border-radius: 10px;
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Кнопки */
+        .action-btn {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px;
+            background-color: var(--button-color);
+            color: var(--button-text);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
         }
+
+        /* Карточки тренировок */
+        .workout-card {
+            background-color: var(--secondary-bg);
+            width: 100%;
+            max-width: 320px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
+        .workout-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        .workout-card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--hint-color);
+        }
     </style>
 </head>
 <body>
 
-    <h2>📊 Расчет калорий</h2>
-    
-    <div class="form-group">
-        <label>Пол:</label>
-        <select id="gender">
-            <option value="male">👨 Мужчина</option>
-            <option value="female">👩 Женщина</option>
-        </select>
+    <!-- Переключатель вкладок -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calories')">🥗 Калории</button>
+        <button class="tab-btn" onclick="switchTab('workout')">🏋️‍♂️ Тренировки</button>
     </div>
 
-    <div class="form-group">
-        <label>Вес (кг):</label>
-        <input type="number" id="weight" placeholder="Например: 75">
+    <!-- ВКЛАДКА 1: КАЛЬКУЛЯТОР -->
+    <div id="calories-tab" class="tab-content active">
+        <div class="form-group">
+            <label>Ваш пол</label>
+            <select id="gender">
+                <option value="male">👨 Мужчина</option>
+                <option value="female">👩 Женщина</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Вес (кг)</label>
+            <input type="number" id="weight" placeholder="Например: 70">
+        </div>
+        <div class="form-group">
+            <label>Рост (см)</label>
+            <input type="number" id="height" placeholder="Например: 175">
+        </div>
+        <div class="form-group">
+            <label>Возраст (лет)</label>
+            <input type="number" id="age" placeholder="Например: 25">
+        </div>
+        <button class="action-btn" id="calcBtn">Рассчитать норму</button>
     </div>
 
-    <div class="form-group">
-        <label>Рост (см):</label>
-        <input type="number" id="height" placeholder="Например: 175">
+    <!-- ВКЛАДКА 2: ТРЕНИРОВКИ -->
+    <div id="workout-tab" class="tab-content">
+        <div class="workout-card">
+            <h3>1. Приседания</h3>
+            <p>3 подхода по 15 повторений. Отдых 60 сек.</p>
+        </div>
+        <div class="workout-card">
+            <h3>2. Отжимания от пола</h3>
+            <p>3 подхода по 12 повторений. Держите спину ровно.</p>
+        </div>
+        <div class="workout-card">
+            <h3>3. Планка</h3>
+            <p>3 подхода по 45 секунд. Максимальное напряжение кора.</p>
+        </div>
+        <button class="action-btn" id="finishWorkoutBtn">✅ Завершить тренировку</button>
     </div>
-
-    <div class="form-group">
-        <label>Возраст:</label>
-        <input type="number" id="age" placeholder="Например: 25">
-    </div>
-
-    <button id="sendData">Рассчитать в боте</button>
 
     <script>
-        // Инициализируем Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
+        tg.expand();
 
-        document.getElementById('sendData').addEventListener('click', () => {
-            const gender = document.getElementById('gender').value;
+        // Логика переключения вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'calories') {
+                document.querySelector('[onclick="switchTab(\'calories\')"]').classList.add('active');
+                document.getElementById('calories-tab').classList.add('active');
+            } else {
+                document.querySelector('[onclick="switchTab(\'workout\')"]').classList.add('active');
+                document.getElementById('workout-tab').classList.add('active');
+            }
+        }
+
+        // Кнопка: Отправка расчета калорий
+        document.getElementById('calcBtn').addEventListener('click', () => {
             const weight = document.getElementById('weight').value;
             const height = document.getElementById('height').value;
             const age = document.getElementById('age').value;
 
             if (!weight || !height || !age) {
-                alert('Пожалуйста, заполните все поля!');
+                alert('Заполните все поля формы!');
                 return;
             }
 
-            // Формируем объект с данными
-            const data = {
-                gender: gender,
+            const payload = {
+                type: "calories",
+                gender: document.getElementById('gender').value,
                 weight: parseInt(weight),
                 height: parseInt(height),
                 age: parseInt(age)
             };
 
-            // Отправляем данные обратно в бот в виде строки
-            tg.sendData(JSON.stringify(data));
-            tg.close(); // Закрываем мини-апп
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
+        });
+
+        // Кнопка: Завершение тренировки
+        document.getElementById('finishWorkoutBtn').addEventListener('click', () => {
+            const payload = { type: "workout_done" };
+            tg.sendData(JSON.stringify(payload));
+            tg.close();
         });
     </script>
 </body>
