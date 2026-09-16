@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bytwise Premium</title>
     <script src="https://telegram.org"></script>
-    <!-- Подключаем иконки для таббара и карточек -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         :root {
@@ -24,12 +23,11 @@
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 0 0 90px 0; /* Отступ снизу под таббар */
+            padding: 0 0 90px 0;
             box-sizing: border-box;
             -webkit-user-select: none;
         }
 
-        /* Шапка */
         .header {
             padding: 20px 20px 10px 20px;
             display: flex;
@@ -56,7 +54,6 @@
             color: var(--text-muted);
         }
 
-        /* Главный контейнер виджета калорий */
         .calories-widget {
             background: var(--surface-color);
             margin: 10px 20px;
@@ -68,7 +65,6 @@
             gap: 25px;
         }
 
-        /* Круговой прогресс */
         .progress-ring-container {
             position: relative;
             width: 110px;
@@ -91,7 +87,6 @@
             color: var(--text-muted);
         }
 
-        /* Инфо калорий справа */
         .calories-info-block {
             flex: 1;
         }
@@ -124,7 +119,6 @@
         .macro-zh { color: #f1c40f; }
         .macro-u { color: #3498db; }
 
-        /* Раздел "Сегодня" */
         .section-title {
             margin: 20px 20px 12px 20px;
             font-size: 18px;
@@ -143,7 +137,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
-        /* Сетка приемов пищи */
         .meals-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -172,7 +165,6 @@
             font-weight: 700;
         }
 
-        /* Баннер Нутрициолога */
         .banner-ai {
             background: linear-gradient(135deg, #f3ecff 0%, #f9f6ff 100%);
             margin: 20px 20px;
@@ -182,6 +174,7 @@
             align-items: center;
             justify-content: space-between;
             border: 1px solid rgba(127, 61, 255, 0.12);
+            cursor: pointer;
         }
         .banner-content {
             display: flex;
@@ -211,7 +204,6 @@
             color: var(--text-muted);
         }
 
-        /* Блок серии дней */
         .streak-card {
             background: var(--surface-color);
             margin: 0 20px 20px 20px;
@@ -251,7 +243,6 @@
             color: var(--text-muted);
         }
 
-        /* Пустая история */
         .empty-history {
             background: var(--surface-color);
             margin: 0 20px;
@@ -287,7 +278,6 @@
             box-shadow: 0 4px 15px rgba(127, 61, 255, 0.25);
         }
 
-        /* Нижний таббар навигации */
         .tabbar {
             position: fixed;
             bottom: 0;
@@ -322,7 +312,6 @@
             color: var(--primary-purple);
         }
         
-        /* Центральная кнопка камеры */
         .tabbar-item.center-btn {
             position: relative;
             top: -15px;
@@ -341,8 +330,22 @@
             margin: 0;
         }
 
-        /* Страницы (переключение) */
         .page {
             display: none;
             animation: pageIn 0.25s ease-out;
         }
+        .page.active {
+            display: block;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="page-home" class="page active">
+        <div class="header">
+            <div class="user-info">
+                <h1 id="username-display">Привет, Атлет! <span>PRO</span></h1>
